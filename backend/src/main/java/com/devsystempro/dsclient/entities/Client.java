@@ -28,6 +28,7 @@ public class Client implements Serializable{
 		this.birthDate = birthDate;
 	}
 
+	
 	public Long getId() {
 		return id;
 	}
@@ -72,9 +73,9 @@ public class Client implements Serializable{
 		return birthDate;
 	}
 
-	/*public void setBirthDate(Instant birthDate) {
+	public void setBirthDate(Instant birthDate) {
 		this.birthDate = birthDate;
-	}*/
+	}
 
 	
 	//HashCode e Equals abaixo e usado para fazer a comparaçãode um objeto com outro
