@@ -1,7 +1,7 @@
 package com.devsystempro.dsclient.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsystempro.dsclient.dto.ClientDTO;
 import com.devsystempro.dsclient.entities.Client;
 import com.devsystempro.dsclient.repositories.ClientRepository;
+import com.devsystempro.dsclient.services.exceptions.EntityNotFoundException;
 
 @Service  //essa annotation ela vai registrar a classe como o componente que vai participar do sistema de injeção de dependecias automatizado do spring (gerente que vai registrartudo relacionado a ClientService) 
 public class ClientService {
@@ -19,13 +20,20 @@ public class ClientService {
 	private ClientRepository repository;//objeto injetado e instanciado..
 	
 	@Transactional(readOnly=true)//garante uma transação com o banco sem travar a operação dando lock 
-	public List<ClientDTO>findAll(){	
+	public List<ClientDTO>findAll()
+	 {	
 	      List<Client>list = repository.findAll();		      
 	      //conversão de forma resumida
-	      return list.stream().map(x->new ClientDTO(x)).collect(Collectors.toList()); //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
-	      
-	  
-	}
+	      return list.stream().map(x ->new ClientDTO(x)).collect(Collectors.toList()); //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
+	 }
+	      @Transactional(readOnly=true)//garante uma transação com o banco sem travar a operação dando lock 
+	  	public ClientDTO findById(Long id)
+	       {	
+	  	      Optional<Client>obj = repository.findById(id);
+	  	      Client entity = obj.orElseThrow(()->new EntityNotFoundException("Entity not found"));//optional verifica se exite o objeto, se caso não exista ele lança a exceção tratada.
+	  	      //conversão de forma resumida
+	  	      return new ClientDTO(entity); //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
+	       }
 }
 
 
