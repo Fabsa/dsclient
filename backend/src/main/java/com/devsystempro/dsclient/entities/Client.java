@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -23,6 +25,13 @@ public class Client implements Serializable{
     private Integer children;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant birthDate;
+   
+    //usado para mostrar o instante que um registro foi criado pela primeira vez e um exemplo
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")//padrão UTC
+    private Instant createdAt; //usado para mostrar o instante que um registro foi criado pela primeira vez e um exemplo
+    
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")//padrão UTC
+    private Instant updatedAt; //usado para mostrar o instante que um registro foi atualizada pela primeira vez e um exemplo
     
     
 	public Client() {}
@@ -84,10 +93,52 @@ public class Client implements Serializable{
 
 	public void setBirthDate(Instant birthDate) {
 		this.birthDate = birthDate;
+	}	
+//////////////////////////////////////////////////////////////////////
+	//usaremos paenas os metodos Get para fins de criação e atualização dos objetos existentes no banco
+	
+	public Instant getCreatedAt() {
+		return createdAt;
 	}
 
+	/*public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}*/
+
+	public Instant getUpdatedAt() {
+		return updatedAt;
+	}
+
+	/*public void setUpdatedAt(Instant updatedAt) {
+		this.updatedAt = updatedAt;
+	}*/
+/////////////////////////////////////////////////////////////////////////////
 	
-	//HashCode e Equals abaixo e usado para fazer a comparaçãode um objeto com outro
+	//metodo Auxiliar
+	@PrePersist
+	public void prePersist() 
+	{
+		createdAt = Instant.now();
+	}
+	@PreUpdate
+	public void preUpdate() 
+	{
+		updatedAt = Instant.now();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//HashCode e Equals abaixo e usado para fazer a comparação de um objeto com outro
 	@Override
 	public int hashCode() {//comparação rapida 
 		final int prime = 31;
