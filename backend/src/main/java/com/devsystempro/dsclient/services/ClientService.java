@@ -1,14 +1,14 @@
 package com.devsystempro.dsclient.services;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;//usado no metodo delete no tratamento de exclusão de itens do banco vendo a integridade
-import org.springframework.dao.EmptyResultDataAccessException;//usado no metodo delete no tratamento de exclusão de itens do banco vendo verifica se o itens tem relacionamento com outro item 
+import org.springframework.dao.DataIntegrityViolationException;                      //usado no metodo delete no tratamento de exclusão de itens do banco vendo a integridade
+import org.springframework.dao.EmptyResultDataAccessException;                       //usado no metodo delete no tratamento de exclusão de itens do banco vendo verifica se o itens tem relacionamento com outro item 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,27 +18,27 @@ import com.devsystempro.dsclient.repositories.ClientRepository;
 import com.devsystempro.dsclient.services.exceptions.DatabaseException;
 import com.devsystempro.dsclient.services.exceptions.ResourceNotFoundException;
 
-@Service  //essa annotation ela vai registrar a classe como o componente que vai participar do sistema de injeção de dependecias automatizado do spring (gerente que vai registrartudo relacionado a ClientService) 
+@Service                                                                             //essa annotation ela vai registrar a classe como o componente que vai participar do sistema de injeção de dependecias automatizado do spring (gerente que vai registrartudo relacionado a ClientService) 
 public class ClientService {
     
 	@Autowired 
-	private ClientRepository repository;//objeto injetado e instanciado..
+	private ClientRepository repository;                                             //objeto injetado e instanciado..
 	
-	@Transactional(readOnly=true)//garante uma transação com o banco sem travar a operação dando lock 
-	public List<ClientDTO>findAll()
-	 {	
-	      List<Client>list = repository.findAll();		      
-	      //conversão de forma resumida
-	      return list.stream().map(x ->new ClientDTO(x)).collect(Collectors.toList()); //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
+	@Transactional(readOnly=true)                                                    //garante uma transação com o banco sem travar a operação dando lock 
+	public Page<ClientDTO>findAllPaged(PageRequest pageRequest)
+	{	
+	      Page<Client>list = repository.findAll(pageRequest);		      
+	                                                                                  //conversão de forma resumida
+	      return list.map(x ->new ClientDTO(x));                                      //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
 	 }
-	      @Transactional(readOnly=true)//garante uma transação com o banco sem travar a operação dando lock 
+	      @Transactional(readOnly=true)                                               //garante uma transação com o banco sem travar a operação dando lock 
 	  	public ClientDTO findById(Long id)
-	       {	
+	    {	
 	  	      Optional<Client>obj = repository.findById(id);
-	  	      Client entity = obj.orElseThrow(()->new ResourceNotFoundException("Entity not found"));//optional verifica se exite o objeto, se caso não exista ele lança a exceção tratada.
-	  	      //conversão de forma resumida
-	  	      return new ClientDTO(entity); //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
-	       }
+	  	      Client entity = obj.orElseThrow(()->new ResourceNotFoundException("Entity not found"));       //optional verifica se exite o objeto, se caso não exista ele lança a exceção tratada.
+	  	                                                                                                    //conversão de forma resumida
+	  	      return new ClientDTO(entity);                                                                 //pega cada elemento da lista Client e transforma em uma list DTO usando expressao lambda.
+	     }
 	      
 	      @Transactional
 	      public ClientDTO insert(ClientDTO dto)
@@ -72,7 +72,7 @@ public class ClientService {
 				throw new ResourceNotFoundException("Id not Fount "+ id);
 			}							
 		}
-	     //não usa transactional 
+	                                                                                                            //não usa transactional 
 		public void delete(Long id) {
 			try{
 			repository.deleteById(id);
